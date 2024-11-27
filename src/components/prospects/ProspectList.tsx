@@ -1,13 +1,17 @@
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, MapPin, Phone } from "lucide-react";
 import { format } from "date-fns";
+import ProspectModal from "./ProspectModal";
 
 interface ProspectListProps {
   prospects: any[];
 }
 
 export default function ProspectList({ prospects }: ProspectListProps) {
+  const [selectedProspect, setSelectedProspect] = useState<any>(null);
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "pending":
@@ -37,16 +41,26 @@ export default function ProspectList({ prospects }: ProspectListProps) {
   };
 
   return (
-    <div className="space-y-4">
-      {prospects.map((prospect) => (
-        <Card key={prospect.id} className="hover:shadow-md transition-shadow">
-          <CardContent className="p-6">
-            <div className="flex justify-between items-start">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">
-                  {prospect.name || "Unnamed Prospect"}
-                </h3>
-                <div className="mt-2 space-y-2">
+    <>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {prospects.map((prospect) => (
+          <Card 
+            key={prospect.id} 
+            className="hover:shadow-lg transition-all duration-200 cursor-pointer transform hover:-translate-y-1"
+            onClick={() => setSelectedProspect(prospect)}
+          >
+            <CardContent className="p-4">
+              <div className="space-y-3">
+                <div className="flex justify-between items-start">
+                  <h3 className="text-lg font-semibold text-gray-900 truncate">
+                    {prospect.name || "Unnamed Prospect"}
+                  </h3>
+                  <Badge className={getStatusColor(prospect.status)}>
+                    {prospect.status}
+                  </Badge>
+                </div>
+                
+                <div className="space-y-2 text-sm">
                   <div className="flex items-center text-gray-600">
                     <Phone className="h-4 w-4 mr-2" />
                     {prospect.phone}
@@ -62,30 +76,28 @@ export default function ProspectList({ prospects }: ProspectListProps) {
                     {format(new Date(prospect.datetime), "PPp")}
                   </div>
                 </div>
-              </div>
-              <div className="flex flex-col gap-2">
-                <Badge className={getStatusColor(prospect.status)}>
-                  {prospect.status}
-                </Badge>
-                <Badge className={getPriorityColor(prospect.priority)}>
-                  {prospect.priority} priority
-                </Badge>
-              </div>
-            </div>
-            {prospect.services && prospect.services.length > 0 && (
-              <div className="mt-4">
-                <div className="flex gap-2">
-                  {prospect.services.map((service: any) => (
-                    <Badge key={service.id} variant="outline">
-                      {service.type}
+
+                <div className="flex justify-between items-center pt-2">
+                  <Badge className={getPriorityColor(prospect.priority)}>
+                    {prospect.priority} priority
+                  </Badge>
+                  {prospect.services && prospect.services.length > 0 && (
+                    <Badge variant="outline">
+                      {prospect.services.length} service{prospect.services.length > 1 ? 's' : ''}
                     </Badge>
-                  ))}
+                  )}
                 </div>
               </div>
-            )}
-          </CardContent>
-        </Card>
-      ))}
-    </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      <ProspectModal
+        prospect={selectedProspect}
+        open={!!selectedProspect}
+        onClose={() => setSelectedProspect(null)}
+      />
+    </>
   );
 }
