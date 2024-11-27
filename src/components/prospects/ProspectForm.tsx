@@ -35,6 +35,8 @@ const formSchema = z.object({
   notes: z.string().optional(),
 });
 
+type FormValues = z.infer<typeof formSchema>;
+
 interface ProspectFormProps {
   initialData?: any;
   onSuccess?: () => void;
@@ -44,7 +46,7 @@ export default function ProspectForm({ initialData, onSuccess }: ProspectFormPro
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData || {
       status: "pending",
@@ -52,10 +54,13 @@ export default function ProspectForm({ initialData, onSuccess }: ProspectFormPro
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: FormValues) => {
     try {
+      // Ensure required fields are present
       const data = {
         ...values,
+        datetime: values.datetime, // Required field
+        phone: values.phone, // Required field
         price: values.price ? parseFloat(values.price) : null,
       };
 
@@ -68,7 +73,10 @@ export default function ProspectForm({ initialData, onSuccess }: ProspectFormPro
         if (error) throw error;
         toast({ title: "Prospect updated successfully" });
       } else {
-        const { error } = await supabase.from("prospects").insert([data]);
+        const { error } = await supabase
+          .from("prospects")
+          .insert(data);
+          
         if (error) throw error;
         toast({ title: "Prospect created successfully" });
       }
