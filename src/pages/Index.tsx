@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, MapPin, List } from "lucide-react";
+import { Plus, MapPin } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ProspectList from "@/components/prospects/ProspectList";
 import { useToast } from "@/components/ui/use-toast";
@@ -19,7 +19,7 @@ export default function Index() {
         .select(`
           *,
           location:locations(id, name),
-          services(id, type, details)
+          services!services_prospect_id_fkey(id, type, details)
         `)
         .order('datetime', { ascending: false });
 
