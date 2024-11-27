@@ -5,11 +5,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, MapPin } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ProspectList from "@/components/prospects/ProspectList";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useState } from "react";
+import ProspectForm from "@/components/prospects/ProspectForm";
 
 export default function Index() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [isNewProspectModalOpen, setIsNewProspectModalOpen] = useState(false);
 
   const { data: prospects, isLoading } = useQuery({
     queryKey: ["prospects"],
@@ -40,7 +44,9 @@ export default function Index() {
       <Card className="bg-white shadow-lg">
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
-            <CardTitle className="text-2xl font-bold text-purple-800">Alpha Cleaning</CardTitle>
+            <CardTitle className="text-2xl font-bold text-purple-800">
+              Alpha Cleaning
+            </CardTitle>
             <p className="text-gray-500">Prospect Management</p>
           </div>
           <div className="flex gap-4">
@@ -53,7 +59,7 @@ export default function Index() {
               Locations
             </Button>
             <Button
-              onClick={() => navigate("/prospects/new")}
+              onClick={() => setIsNewProspectModalOpen(true)}
               className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700"
             >
               <Plus className="h-4 w-4" />
@@ -71,6 +77,23 @@ export default function Index() {
           )}
         </CardContent>
       </Card>
+
+      <Dialog
+        open={isNewProspectModalOpen}
+        onOpenChange={setIsNewProspectModalOpen}
+      >
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>New Prospect</DialogTitle>
+          </DialogHeader>
+          <ProspectForm
+            onSuccess={() => {
+              setIsNewProspectModalOpen(false);
+              toast({ title: "Prospect created successfully" });
+            }}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
