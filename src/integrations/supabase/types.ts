@@ -50,6 +50,7 @@ export type Database = {
           name: string | null
           notes: string | null
           phone: string
+          position: number | null
           price: number | null
           priority: Database["public"]["Enums"]["priority_type"]
           status: Database["public"]["Enums"]["status_type"]
@@ -65,6 +66,7 @@ export type Database = {
           name?: string | null
           notes?: string | null
           phone: string
+          position?: number | null
           price?: number | null
           priority?: Database["public"]["Enums"]["priority_type"]
           status?: Database["public"]["Enums"]["status_type"]
@@ -80,6 +82,7 @@ export type Database = {
           name?: string | null
           notes?: string | null
           phone?: string
+          position?: number | null
           price?: number | null
           priority?: Database["public"]["Enums"]["priority_type"]
           status?: Database["public"]["Enums"]["status_type"]
@@ -199,7 +202,10 @@ export type Database = {
       }
     }
     Functions: {
-      [_ in never]: never
+      initialize_prospect_positions: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
     }
     Enums: {
       couch_type: "leather" | "tissue"
